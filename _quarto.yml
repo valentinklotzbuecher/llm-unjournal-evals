@@ -1,0 +1,112 @@
+project:
+  type: book
+  output-dir: _book
+  resources:
+    - slidesvk.html
+
+book:
+  title: "Comparing LLM and human reviews of social science research using data from Unjournal.org"
+  author:
+    - name: "David Reinstein"
+      affiliation: "The Unjournal"
+      email: davidreinstein@unjournal.org
+      orcid: 0000-0002-0470-4991
+    - name: "Valentin Klotzbücher"
+      orcid: 0000-0001-9382-6757
+      email: valentin.klotzbuecher@usb.ch
+      affiliation: "University of Basel & University Hospital Basel"
+    - name: "Tianmai Michael Zhang"
+      orcid: 0000-0001-5108-9250
+      email: tianmai@uw.edu
+      affiliation: "University of Washington"
+    # - name: "Casey Wimsatt"
+    # - name: "Lorenzo Pacchiardi"
+  chapters:
+    - index.qmd
+    - methods.qmd #Puts papers data together, calls the LLM runs, has python code
+    - results.qmd #Matches LLM output to Unjournal rating data, analysis of differences and performance, R code
+    # - questions_answers.qmd
+    - discussion.qmd
+    - references.qmd
+  # appendices:
+  #   - paper_response_analysis.qmd
+  date: last-modified
+  abstract: |
+    We will build and refine LLM tools to generate peer-reviews and ratings of impactful research, and compare these with human experts' work (esp. from Unjournal.org): to benchmark performance, understand AI's research taste, and develop tools to improve research evaluation and dissemination.
+  repo-url: https://github.com/valentinklotzbuecher/llm-unjournal-eval
+  downloads: [pdf]
+  sidebar:
+    style: "docked"
+    search: true
+    tools:
+      - icon: rocket
+        href: https://www.unjournal.org/
+        text: "The Unjournal"
+      - icon: display
+        href: slidesvk.html
+        text: "📊 Slides"
+
+bibliography:
+  - "references.bib"
+  - "grateful-refs.bib"
+csl: "the-quarterly-journal-of-economics.csl"
+link-citations: true
+
+
+format:
+  html:
+    theme: [journal, theme-light.scss]
+    # googlefonts:
+    #   - Source Sans Pro:400,600
+    highlight-style: atom-one
+    toc: true
+    number-sections: false
+    citations-hover: true
+    footnotes-hover: true
+    embed-resources: true
+    smooth-scroll: true
+    code-fold: true
+    code-tools: true
+    code-summary: "Show code"
+    code-overflow: wrap
+    fig-cap-location: bottom
+    fig-align: left
+    lightbox: true
+    df-print: paged
+    execute:
+      warning: false
+      message: false
+      freeze: auto
+      cache: true
+      python: "python3"
+
+  # pdf:
+  #   documentclass: scrreprt
+  #   fontsize: 11pt
+  #   geometry: margin=1in
+  #   toc: true
+  #   number-sections: true
+  #   link-citations: true
+  #   keep-tex: true
+  #   fig-cap-location: top
+  #   fig-align: left
+  #   df-print: kable
+  #   latex-engine: xelatex
+  #   execute:
+  #     warning: false
+  #     message: false
+  #     freeze: auto
+  #     cache: true
+  #     prefer-html: true
+  #     echo: false
+  # docx:
+  #   toc: true
+  #   number-sections: true
+  #   link-citations: true
+  #   execute:
+  #     warning: false
+  #     message: false
+  #     freeze: auto
+  #     cache: true
+  #     prefer-html: true
+  #     echo: false
