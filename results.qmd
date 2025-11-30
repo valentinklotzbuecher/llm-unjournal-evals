@@ -359,59 +359,6 @@ ggplot() +
 ```
 
 
-@fig-heatmap-human-minus-llm shows a heatmap of the differences between human and LLM mean ratings across all evaluation criteria. Positive values (in green) indicate that humans rated the paper higher than the LLM, while negative values (in orange) indicate the opposite.
-
-```{r}
-#| label: fig-heatmap-human-minus-llm
-#| fig-cap: "Heatmap of Human minus LLM mean ratings across evaluation criteria"
-#| fig-width: 14
-#| fig-height: 7
-
-
-metric_order <- c("overall","claims","methods","adv_knowledge","logic_comms","open_sci","gp_relevance")
-metric_lab <- c(
-  overall="Overall",
-  claims="Claims & evidence",
-  methods="Methods",
-  adv_knowledge="Adv. knowledge",
-  logic_comms="Logic & comms",
-  open_sci="Open science",
-  gp_relevance="Global relevance"
-)
-
-H_mean <- metrics_use %>%
-  filter(who=="Human", criteria %in% metric_order) %>%
-  group_by(label_paper, criteria) %>%
-  summarise(h = mean(mid, na.rm=TRUE), .groups="drop")
-
-L_mean <- metrics_use %>%
-  filter(who=="LLM", criteria %in% metric_order) %>%
-  group_by(label_paper, criteria) %>%
-  summarise(l = mean(mid, na.rm=TRUE), .groups="drop")
-
-Ddiff <- inner_join(H_mean, L_mean, by=c("label_paper","criteria")) %>%
-  mutate(diff = h - l) %>%  # positive = Human higher
-  mutate(crit = factor(criteria, levels = metric_order, labels = metric_lab[metric_order]))
-
-# order papers by overall difference (Human−LLM)
-ord_p <- Ddiff %>%
-  filter(criteria=="overall") %>%
-  arrange(desc(diff)) %>%
-  pull(label_paper)
-
-ggplot(Ddiff, aes(x = factor(label_paper, levels = ord_p), y = crit, fill = diff)) +
-  geom_tile(color = "white", linewidth = 0.25) +
-  scale_fill_gradient2(low = UJ_ORANGE, mid = "grey95", high = UJ_GREEN, midpoint = 0,
-                       name = "Human − LLM") +
-  labs(x = NULL, y = NULL) +
-  theme_uj() +
-  theme(axis.text.x = element_text(angle = 60, hjust = 1, vjust = 1, size = 8), 
-        axis.text.y = element_text(size = 12),
-        panel.grid = element_blank())
-
-```
-
-
 ```{r}
 #| label: fig-forest-tiers-should
 #| fig-cap: "Comparison of Human vs LLM journal tier ratings (should be published in)"
@@ -504,6 +451,118 @@ ggplot() +
 
 ```
 
+@fig-heatmap-human-minus-llm shows a heatmap of the differences between human and LLM mean ratings across all evaluation criteria. Positive values (in green) indicate that humans rated the paper higher than the LLM, while negative values (in orange) indicate the opposite.
+
+```{r}
+#| label: fig-heatmap-human-minus-llm
+#| fig-cap: "Heatmap of Human minus LLM mean ratings across evaluation criteria"
+#| fig-width: 14
+#| fig-height: 7
+
+
+metric_order <- c("overall","claims","methods","adv_knowledge","logic_comms","open_sci","gp_relevance")
+metric_lab <- c(
+  overall="Overall",
+  claims="Claims & evidence",
+  methods="Methods",
+  adv_knowledge="Adv. knowledge",
+  logic_comms="Logic & comms",
+  open_sci="Open science",
+  gp_relevance="Global relevance"
+)
+
+H_mean <- metrics_use %>%
+  filter(who=="Human", criteria %in% metric_order) %>%
+  group_by(label_paper, criteria) %>%
+  summarise(h = mean(mid, na.rm=TRUE), .groups="drop")
+
+L_mean <- metrics_use %>%
+  filter(who=="LLM", criteria %in% metric_order) %>%
+  group_by(label_paper, criteria) %>%
+  summarise(l = mean(mid, na.rm=TRUE), .groups="drop")
+
+Ddiff <- inner_join(H_mean, L_mean, by=c("label_paper","criteria")) %>%
+  mutate(diff = h - l) %>%  # positive = Human higher
+  mutate(crit = factor(criteria, levels = metric_order, labels = metric_lab[metric_order]))
+
+# order papers by overall difference (Human−LLM)
+ord_p <- Ddiff %>%
+  filter(criteria=="overall") %>%
+  arrange(desc(diff)) %>%
+  pull(label_paper)
+
+ggplot(Ddiff, aes(x = factor(label_paper, levels = ord_p), y = crit, fill = diff)) +
+  geom_tile(color = "white", linewidth = 0.25) +
+  scale_fill_gradient2(low = UJ_ORANGE, mid = "grey95", high = UJ_GREEN, midpoint = 0,
+                       name = "Human − LLM") +
+  labs(x = NULL, y = NULL) +
+  theme_uj() +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, vjust = 1, size = 8), 
+        axis.text.y = element_text(size = 12),
+        panel.grid = element_blank())
+
+```
+
+
+
+::: {.columns}
+
+::: {.column width="75%"}
+
+
+```{r}
+#| label: scatter-overall-static-stats
+#| fig-width: 5
+#| fig-height: 5
+
+D <- metrics_use %>%
+  filter(criteria=="overall") %>%
+  group_by(who, label_paper) %>%
+  summarise(mid = mean(mid, na.rm=TRUE), .groups="drop") %>%
+  tidyr::pivot_wider(names_from = who, values_from = mid) %>%
+  filter(is.finite(Human), is.finite(LLM))   # all matched papers
+
+# stats
+r    <- suppressWarnings(cor(D$Human, D$LLM, method="pearson"))
+rho  <- suppressWarnings(cor(D$Human, D$LLM, method="spearman"))
+MAE  <- mean(abs(D$LLM - D$Human))
+alpha_overall <- tryCatch({
+  if (requireNamespace("irr", quietly = TRUE)) {
+    M <- rbind(D$Human, D$LLM); irr::kripp.alpha(M, method = "interval")$value
+  } else NA_real_
+}, error = function(e) NA_real_)
+n <- nrow(D)
+
+ggplot(D, aes(x = Human, y = LLM)) +
+  geom_abline(slope=1, intercept=0, linetype="dashed", linewidth=0.8, color="grey60") +
+  geom_point(color=UJ_GREEN, size=4, alpha=0.9) +
+  stat_smooth(method="lm", se=FALSE, linewidth=0.5, color=UJ_ORANGE) +
+  coord_equal(xlim=c(25,100), ylim=c(25,100), expand=FALSE) +
+  # annotate("text", x = 4, y = 98,
+  #          label = sprintf("n=%d   r=%.2f   rho=%.2f   α=%.2f   MAE=%.1f", n, r, rho, alpha_overall, MAE),
+  #          hjust = 0, size = 3.5) +
+  labs(x="Human overall (0–100)", y="LLM overall (0–100)") +
+  theme_uj()
+
+
+```
+
+
+:::
+
+::: {.column width="25%"}
+
+
+- Matched papers: `r n`
+- Pearson r: `r sprintf("%.2f", r)`
+- Spearman rho: `r sprintf("%.2f", rho)`
+- Krippendorff α (interval): `r if (is.na(alpha)) "NA" else sprintf("%.2f", alpha_overall)`
+- MAE (points): `r sprintf("%.1f", MAE)`
+
+:::
+
+
+:::
 
 
 \clearpage
@@ -524,15 +583,27 @@ We start by examining the Williams et al. (2024) evaluation in detail and then s
 ```{r}
 #| label: llm-json-from-responses
 
+library(jsonlite)
+library(purrr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(tibble)
+library(here)
+
+
+gpt5pro_price_input <- 15 # input per 1M tokens ()
+gpt5pro_price_output <- 120 # output per 1M tokens ()
+
+price_in_per_token <- gpt5pro_price_input / 1e6
+price_out_per_token <- gpt5pro_price_output / 1e6
+
+
 
 `%||%` <- function(x, y) if (!is.null(x)) x else y
 
 json_dir <- here("results", "json")
-json_files <- list.files(
-  json_dir,
-  pattern = "\\.response\\.json$",
-  full.names = TRUE
-)
+json_files <- list.files(json_dir, pattern = "\\.response\\.json$", full.names = TRUE)
 
 parse_one_response <- function(path) {
   r <- jsonlite::fromJSON(path, simplifyVector = FALSE)
@@ -633,6 +704,40 @@ llm_tiers_long      <- bind_rows(purrr::map(parsed, "tiers"))
 llm_reasoning_steps <- bind_rows(purrr::map(parsed, "reasoning_steps"))
 
 ```
+
+
+```{r}
+#| label: llm-token-cost-summary
+
+token_cost_summary <- llm_master |>
+  transmute(
+    paper,
+    input_tokens,
+    output_tokens,
+    reasoning_tokens,
+    total_tokens    = input_tokens + output_tokens,
+    est_cost_usd    = input_tokens  * price_in_per_token +
+      (output_tokens + reasoning_tokens) * price_out_per_token
+  ) |>
+  arrange(desc(est_cost_usd))
+
+token_cost_summary_display <- token_cost_summary |>
+  mutate(
+    est_cost_usd = round(est_cost_usd, 2)
+  )
+
+knitr::kable(
+  token_cost_summary_display,
+  col.names = c(
+    "Paper", "Input tokens", "Output tokens", "Reasoning tokens",
+    "Total tokens", "Est. cost (USD)"
+  ),
+  align = c("l","r","r","r","r","r")
+)
+
+```
+
+
 
 
 
@@ -782,56 +887,5 @@ Qualitatively, the LLM and human experts are strikingly aligned on what the main
 This case suggests that, at least in this configuration, the LLM can reproduce sophisticated methodological critiques and uncertainty language but tends to under‑penalise these shortcomings in its quantitative ratings, especially for high‑profile, high‑impact work.
 
 
-::: {.callout-tip}
-#### Model reasoning trace – Williams et al. 2024
-
-::: {.small}
-`r williams_reasoning_full`
-:::
-:::
-
-::: {.callout-note}
-#### Diagnostic assessment – Williams et al. 2024
-
-::: {.small}
-`r williams_assessment`
-:::
-:::
-
-
-
-
-
-
-```{r}
-#| label: llm-token-cost-summary
-
-token_cost_summary <- llm_master |>
-  transmute(
-    paper,
-    input_tokens,
-    output_tokens,
-    reasoning_tokens,
-    total_tokens    = input_tokens + output_tokens,
-    est_cost_usd    = input_tokens  * price_in_per_token +
-      (output_tokens + reasoning_tokens) * price_out_per_token
-  ) |>
-  arrange(desc(est_cost_usd))
-
-token_cost_summary_display <- token_cost_summary |>
-  mutate(
-    est_cost_usd = round(est_cost_usd, 2)
-  )
-
-knitr::kable(
-  token_cost_summary_display,
-  col.names = c(
-    "Paper", "Input tokens", "Output tokens", "Reasoning tokens",
-    "Total tokens", "Est. cost (USD)"
-  ),
-  align = c("l","r","r","r","r","r")
-)
-
-```
 
 

@@ -312,7 +312,7 @@ TEXT_FORMAT_COMBINED = {
 SYSTEM_PROMPT_COMBINED = f"""
 
 Your role -- You are an academic expert as well as a practitioner across every relevant field -- use all your knowledge and insight. You are acting as an expert research evaluator/reviewer. 
-Do not look at any existing ratings or evaluations of these papers you might find on the internet or in your corpus, do not use the authors' names, status, or institutions in your judgment -- give your assessment based on the *content* of the papers alone; do it based on your knowledge and insights. 
+Do not look at any existing ratings or evaluations of these papers you might find on the internet or in your corpus, do not use the authors' names, status, or institutions in your judgment; ignore where (or whether) the work is published, the prestige of any venue, and how much attention it has received. Do not use this as evidence about quality. You must base all judgments entirely on the content of the PDF.
 
 Diagnostic summary (Aim for about 1000 words, based only on the PDF):
 Provide a compact paragraph that identifies the most important issues you detect in the manuscript itself (e.g., identification threats, data limitations, misinterpretations, internal inconsistencies, missing robustness, replication barriers). Be specific, neutral, and concrete. This summary should precede any scoring and should guide your uncertainty. Output this text in the JSON field `assessment_summary`.
@@ -386,7 +386,24 @@ To help universities and policymakers make sense of our evaluations, we want to 
 	- Journal ranking tier "will" (0.0-5.0) 
 		Schema: tierwill: What if this work has already been peer reviewed and published? If this work has already been published, and you know where, please report the prediction you would have given absent that knowledge.
 
-Return STRICT JSON matching the supplied schema. No preamble. No markdown. No extra text.
+When you set the quantitative metrics:
+
+- Treat `midpoint` as your 50% belief (the value such that you think there is a 50% chance the true value is higher and 50% chance it is lower).
+- Treat `lower_bound` and `upper_bound` as an honest 90% credible interval (roughly the 5th and 95th percentiles of your belief distribution).
+
+For all percentile metrics (0–100 scale):
+- You must always satisfy: lower_bound < midpoint < upper_bound.
+
+For the journal tier metrics (0.0–5.0):
+- You must always satisfy: ci_lower < score < ci_upper.
+
+Before finalising your JSON:
+
+- Check that your numeric scores are consistent with your own assessment_summary. If your summary describes serious or fundamental problems with methods, evidence, or interpretation, your scores for those metrics (and for "overall") should clearly reflect that.
+- Conversely, if you assign very high scores in any metric, your summary should explicitly justify why that aspect of the paper is unusually strong relative to other serious work in the field.
+- If you find yourself about to make the lower and upper bounds equal to the midpoint, adjust them so they form a non-degenerate interval that honestly reflects your uncertainty. Do not be afraid to use wide credible intervals when you are genuinely uncertain. 
+
+
 
 Fill both top-level keys:
 - `assessment_summary`: about 1000 words.
@@ -396,15 +413,8 @@ Field names
 - Percentile metrics → `midpoint`, `lower_bound`, `upper_bound`.
 - Tier metrics → `score`, `ci_lower`, `ci_upper`.
 
-Bounds
-- Percentiles in [0, 100] with lower_bound ≤ midpoint ≤ upper_bound.
-- Tiers in [0, 5] with ci_lower ≤ score ≤ ci_upper.
+Return STRICT JSON matching the supplied schema. No preamble. No markdown. No extra text.
 
-Do not include citations, URLs, author identity, or any external information.
- Percentiles in [0, 100] with lower_bound ≤ midpoint ≤ upper_bound.
-- Tiers in [0, 5] with ci_lower ≤ score ≤ ci_upper.
-
-Do not include citations, URLs, author identity, or any external information.
 """.strip()
 
 # Async-by-default kickoff: submit and return job metadata. No waiting.
@@ -507,18 +517,18 @@ else:
     print("No new jobs started.")
 ```
 
-A separate script polls job status and, for each completed job, retrieves the raw response, extracts the first balanced top‑level JSON object, and writes both the raw response and parsed outputs to disk.
+We then polls job status and, for each completed job, retrieve the raw JSON object, and write the responses to disk.
+
 
 ```{python}
 #| label: llm-status-collect
 #| eval: false
-#| code-summary: "Poll status, collect completed outputs, write per-paper and combined CSVs"
+#| code-summary: "Poll status, collect completed outputs, save raw JSON only"
 
 import json, pathlib, pandas as pd
 
 OUT = pathlib.Path("results")
 IDX = OUT / "jobs_index.csv"
-PER = OUT / "per_paper"; PER.mkdir(exist_ok=True)
 JSN = OUT / "json"; JSN.mkdir(exist_ok=True)
 
 def _safe_read_csv(path, columns):
@@ -526,7 +536,6 @@ def _safe_read_csv(path, columns):
     if not p.exists():
         return pd.DataFrame(columns=columns)
     try:
-        # Set dtype='object' for string columns to avoid dtype warnings
         df = pd.read_csv(p, dtype={'error': 'object', 'reasoning_id': 'object'})
     except Exception:
         return pd.DataFrame(columns=columns)
@@ -535,9 +544,12 @@ def _safe_read_csv(path, columns):
             df[c] = pd.NA
     return df
 
-cols = ["paper","pdf","response_id","file_id","model","status","created_at",
-        "last_update","collected","error","reasoning_id","input_tokens",
-        "output_tokens","reasoning_tokens","reasoning_summary"]
+cols = [
+    "paper","pdf","response_id","file_id","model","status",
+    "created_at","last_update","collected","error",
+    "reasoning_id","input_tokens","output_tokens","reasoning_tokens",
+    "reasoning_summary"
+]
 
 idx = _safe_read_csv(IDX, cols)
 
@@ -545,243 +557,58 @@ if idx.empty:
     print("Index is empty.")
 else:
     term = {"completed","failed","cancelled","expired"}
+
+    # 1) Refresh statuses
     for i, row in idx.iterrows():
         if str(row.get("status")) in term:
             continue
         try:
             r = client.responses.retrieve(str(row["response_id"]))
             d = _resp_as_dict(r)
-            idx.at[i,"status"] = d.get("status")
-            idx.at[i,"last_update"] = pd.Timestamp.utcnow().isoformat()
+            idx.at[i, "status"] = d.get("status")
+            idx.at[i, "last_update"] = pd.Timestamp.utcnow().isoformat()
             if d.get("status") in term and d.get("status") != "completed":
-                idx.at[i,"error"] = json.dumps(d.get("incomplete_details") or {})
+                idx.at[i, "error"] = json.dumps(d.get("incomplete_details") or {})
         except Exception as e:
-            idx.at[i,"error"] = str(e)
+            idx.at[i, "error"] = str(e)
 
-    newly_done = idx[(idx["status"]=="completed") & (idx["collected"]==False)]
+    # 2) Collect fresh completed outputs
+    newly_done = idx[(idx["status"] == "completed") & (idx["collected"] == False)]
     print(f"Completed and pending collection: {len(newly_done)}")
 
-    rows_accum, summaries = [], []
     for i, row in newly_done.iterrows():
         rid   = str(row["response_id"])
         paper = str(row["paper"])
         try:
             r = client.responses.retrieve(rid)
 
+            # save full raw response JSON
             with open(JSN / f"{paper}.response.json", "w", encoding="utf-8") as f:
                 f.write(json.dumps(_resp_as_dict(r), ensure_ascii=False))
 
-            jtxt = _get_output_text(r)
-            j    = _extract_json(jtxt)
-
-            for metric, vals in (j.get("metrics") or {}).items():
-                if metric in ("tier_should","tier_will"):
-                    rows_accum.append({
-                        "paper": paper, "metric": metric, "metric_type": "tier",
-                        "value": vals.get("score"), "lo": vals.get("ci_lower"), "hi": vals.get("ci_upper"),
-                        "scale_min": 0, "scale_max": 5,
-                    })
-                else:
-                    rows_accum.append({
-                        "paper": paper, "metric": metric, "metric_type": "percentile",
-                        "value": vals.get("midpoint"), "lo": vals.get("lower_bound"), "hi": vals.get("upper_bound"),
-                        "scale_min": 0, "scale_max": 100,
-                    })
-
-            if "assessment_summary" in j:
-                summaries.append({"paper": paper, "assessment_summary": j["assessment_summary"]})
-
-            per_df = pd.DataFrame([r for r in rows_accum if r["paper"]==paper])
-            per_df.to_csv(PER / f"{paper}_long.csv", index=False, encoding="utf-8")
-
+            # optional: stash reasoning meta in jobs_index
             m = _reasoning_meta(r)
-            idx.at[i,"collected"] = True
-            idx.at[i,"error"] = pd.NA
-            idx.at[i,"reasoning_id"] = m.get("reasoning_id")
-            idx.at[i,"input_tokens"] = m.get("input_tokens")
-            idx.at[i,"output_tokens"] = m.get("output_tokens")
-            idx.at[i,"reasoning_tokens"] = m.get("reasoning_tokens")
-            idx.at[i,"reasoning_summary"] = m.get("reasoning_summary")
-
+            idx.at[i, "collected"]         = True
+            idx.at[i, "error"]             = pd.NA
+            idx.at[i, "reasoning_id"]      = m.get("reasoning_id")
+            idx.at[i, "input_tokens"]      = m.get("input_tokens")
+            idx.at[i, "output_tokens"]     = m.get("output_tokens")
+            idx.at[i, "reasoning_tokens"]  = m.get("reasoning_tokens")
+            idx.at[i, "reasoning_summary"] = m.get("reasoning_summary")
 
         except Exception as e:
-            idx.at[i,"error"] = f"collect: {e}"
+            idx.at[i, "error"] = f"collect: {e}"
 
-    if rows_accum:
-        combined = pd.DataFrame(rows_accum)
-
-        # merge with any previous combined_long.csv
-        comb_path = OUT / "combined_long.csv"
-        prev_cols = ["paper","metric","metric_type","value","lo","hi","scale_min","scale_max"]
-        prev = _safe_read_csv(comb_path, prev_cols)
-        if not prev.empty:
-            prev = prev[~prev["paper"].isin(newly_done["paper"])]
-            combined = pd.concat([prev, combined], ignore_index=True)
-        combined.to_csv(comb_path, index=False, encoding="utf-8")
-
-        # metrics_long.csv (no leading-dot chaining)
-        metrics_df = combined[combined["metric_type"]=="percentile"].copy()
-        metrics_df = metrics_df.rename(columns={"value":"midpoint","lo":"lower_bound","hi":"upper_bound"})
-        metrics_df = metrics_df.drop(columns=["metric_type","scale_min","scale_max"])
-        metrics_df.to_csv(OUT / "metrics_long.csv", index=False, encoding="utf-8")
-
-        # tiers_long.csv
-        tiers_df = combined[combined["metric_type"]=="tier"].copy()
-        tiers_df = tiers_df.rename(columns={"metric":"tier_kind","value":"score"})
-        tiers_df = tiers_df.drop(columns=["metric_type","scale_min","scale_max"])
-        tiers_df.to_csv(OUT / "tiers_long.csv", index=False, encoding="utf-8")
-
-    # assessment_summaries.csv
-    if summaries:
-        s_path = OUT / "assessment_summaries.csv"
-        s_df = pd.DataFrame(summaries)
-        prev_s = _safe_read_csv(s_path, ["paper","assessment_summary"])
-        if not prev_s.empty:
-            prev_s = prev_s[~prev_s["paper"].isin(newly_done["paper"])]
-            s_df = pd.concat([prev_s, s_df], ignore_index=True)
-        s_df.to_csv(s_path, index=False, encoding="utf-8")
-
+    # 3) Save updated index and print progress
     idx.to_csv(IDX, index=False)
     counts = idx["status"].value_counts(dropna=False).to_dict()
     print("Status counts:", counts)
-    print(f"Progress: {counts.get('completed',0)}/{len(idx)} completed")
-```
-
-
-```{python}
-#| label: llm-master-table
-#| eval: false
-#| code-summary: "Build one-row-per-paper master table (CSV/Parquet/Excel)"
-
-import pathlib
-import json
-import pandas as pd
-
-OUT = pathlib.Path("results")
-OUT.mkdir(exist_ok=True)
-IDX = OUT / "jobs_index.csv"
-
-# Base index (one row per paper / job)
-idx_cols = [
-    "paper","pdf","response_id","file_id","model","status",
-    "created_at","last_update","collected","error",
-    "reasoning_id","input_tokens","output_tokens","reasoning_tokens",
-    "reasoning_summary",  # may be all-NA if you haven’t added it yet
-]
-idx = read_csv_or_empty(IDX, columns=idx_cols)
-if idx.empty:
-    print("jobs_index.csv is empty; nothing to build.")
-else:
-    # Long → wide: percentile metrics
-    metrics_path = OUT / "metrics_long.csv"
-    metrics = read_csv_or_empty(
-        metrics_path,
-        columns=["paper","metric","midpoint","lower_bound","upper_bound"],
-    )
-    if not metrics.empty:
-        m_wide = (
-            metrics
-            .pivot(index="paper",
-                   columns="metric",
-                   values=["midpoint","lower_bound","upper_bound"])
-        )
-        # Flatten MultiIndex: (stat, metric) → "{metric}_{stat}"
-        m_wide.columns = [
-            f"{metric}_{stat}" for stat, metric in m_wide.columns
-        ]
-        m_wide = m_wide.reset_index()
-    else:
-        m_wide = pd.DataFrame(columns=["paper"])
-
-    # Long → wide: tier metrics
-    tiers_path = OUT / "tiers_long.csv"
-    tiers = read_csv_or_empty(
-        tiers_path,
-        columns=["paper","tier_kind","score","lo","hi"],
-    )
-    if not tiers.empty:
-        t_wide = (
-            tiers
-            .pivot(index="paper",
-                   columns="tier_kind",
-                   values=["score","lo","hi"])
-        )
-        t_wide.columns = [
-            f"{tier}_{stat}" for stat, tier in t_wide.columns
-        ]
-        t_wide = t_wide.reset_index()
-    else:
-        t_wide = pd.DataFrame(columns=["paper"])
-
-    # Assessment summaries
-    summaries_path = OUT / "assessment_summaries.csv"
-    summaries = read_csv_or_empty(
-        summaries_path,
-        columns=["paper","assessment_summary"],
-    )
-
-    # Merge everything to one row per paper
-    wide = (
-        idx
-        .merge(m_wide, on="paper", how="left")
-        .merge(t_wide, on="paper", how="left")
-        .merge(summaries, on="paper", how="left")
-    )
-
-    # OPTIONAL: if you did NOT store reasoning_summary in jobs_index,
-    # you can fill a short summary from the stored JSON once per paper.
-    if wide["reasoning_summary"].isna().all():
-        JSN = OUT / "json"
-        def _reasoning_summary_from_json(paper):
-            jpath = JSN / f"{paper}.response.json"
-            if not jpath.exists():
-                return pd.NA
-            try:
-                with open(jpath, "r", encoding="utf-8") as f:
-                    d = json.load(f)
-                out = d.get("output") or []
-                if out and isinstance(out, list) and out[0].get("type") == "reasoning":
-                    summ = out[0].get("summary") or []
-                    if summ and isinstance(summ, list):
-                        return summ[0].get("text")
-            except Exception:
-                return pd.NA
-            return pd.NA
-
-        wide["reasoning_summary"] = wide["paper"].apply(_reasoning_summary_from_json)
-
-    # Tidy column order: metadata → metrics → tiers → text
-    meta_cols = [
-        "paper","pdf","model","response_id","file_id","status",
-        "created_at","last_update","collected","error",
-        "input_tokens","output_tokens","reasoning_tokens","reasoning_id",
-        "reasoning_summary",
-    ]
-    meta_cols = [c for c in meta_cols if c in wide.columns]
-
-    # All remaining numeric/text columns
-    other_cols = [c for c in wide.columns if c not in meta_cols]
-    wide = wide[meta_cols + other_cols]
-
-    # Write outputs
-    master_csv   = OUT / "llm_evals_master.csv"
-    # master_parq  = OUT / "llm_evals_master.parquet"
-    master_xlsx  = OUT / "llm_evals_master.xlsx"
-
-    wide.to_csv(master_csv, index=False)
-    # wide.to_parquet(master_parq, index=False)
-
-    # try:
-    #     wide.to_excel(master_xlsx, index=False)
-    # except ImportError:
-    #     # Excel is nice-to-have; fail soft if openpyxl/xlsxwriter isn’t installed
-    #     print("Excel writer not available; skipped llm_evals_master.xlsx")
-
-    print("Master table written to:")
-    print(f"  - {master_csv}")
-    # print(f"  - {master_parq}")
-    # print(f"  - {master_xlsx} (if Excel writer is installed)")
+    print(f"Progress: {counts.get('completed', 0)}/{len(idx)} completed")
 
 ```
+
+
+
+
 
     

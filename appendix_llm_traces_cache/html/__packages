@@ -1,13 +1,5 @@
-tidyverse
-ggplot2
-tibble
-tidyr
-readr
+jsonlite
 purrr
 dplyr
-stringr
-forcats
-lubridate
 here
 janitor
-jsonlite

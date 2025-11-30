@@ -32,7 +32,7 @@ book:
   date: last-modified
   abstract: |
     We will build and refine LLM tools to generate peer-reviews and ratings of impactful research, and compare these with human experts' work (esp. from Unjournal.org): to benchmark performance, understand AI's research taste, and develop tools to improve research evaluation and dissemination.
-  # repo-url: https://github.com/valentinklotzbuecher/llm-unjournal-eval
+  repo-url: https://github.com/valentinklotzbuecher/llm-unjournal-eval
   downloads: [pdf]
 
 bibliography:
@@ -68,16 +68,14 @@ format:
       freeze: auto
       cache: true
       python: "python3"
-    code-links:
-      - icon: github
-        href: https://github.com/valentinklotzbuecher/llm-unjournal-eval
+    # code-links:
+    #   - icon: github
+    #     href: https://github.com/valentinklotzbuecher/llm-unjournal-eval
     other-links:
       - icon: rocket
         href: https://www.unjournal.org/
         text: "The Unjournal"
-      - icon: display
-        href: slidesvk.html
-        text: "Slides"
+        
   pdf:
     documentclass: scrreprt
     fontsize: 11pt
