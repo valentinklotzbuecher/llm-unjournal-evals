@@ -505,66 +505,6 @@ ggplot(Ddiff, aes(x = factor(label_paper, levels = ord_p), y = crit, fill = diff
 
 
 
-::: {.columns}
-
-::: {.column width="75%"}
-
-
-```{r}
-#| label: scatter-overall-static-stats
-#| fig-width: 5
-#| fig-height: 5
-
-D <- metrics_use %>%
-  filter(criteria=="overall") %>%
-  group_by(who, label_paper) %>%
-  summarise(mid = mean(mid, na.rm=TRUE), .groups="drop") %>%
-  tidyr::pivot_wider(names_from = who, values_from = mid) %>%
-  filter(is.finite(Human), is.finite(LLM))   # all matched papers
-
-# stats
-r    <- suppressWarnings(cor(D$Human, D$LLM, method="pearson"))
-rho  <- suppressWarnings(cor(D$Human, D$LLM, method="spearman"))
-MAE  <- mean(abs(D$LLM - D$Human))
-alpha_overall <- tryCatch({
-  if (requireNamespace("irr", quietly = TRUE)) {
-    M <- rbind(D$Human, D$LLM); irr::kripp.alpha(M, method = "interval")$value
-  } else NA_real_
-}, error = function(e) NA_real_)
-n <- nrow(D)
-
-ggplot(D, aes(x = Human, y = LLM)) +
-  geom_abline(slope=1, intercept=0, linetype="dashed", linewidth=0.8, color="grey60") +
-  geom_point(color=UJ_GREEN, size=4, alpha=0.9) +
-  stat_smooth(method="lm", se=FALSE, linewidth=0.5, color=UJ_ORANGE) +
-  coord_equal(xlim=c(25,100), ylim=c(25,100), expand=FALSE) +
-  # annotate("text", x = 4, y = 98,
-  #          label = sprintf("n=%d   r=%.2f   rho=%.2f   α=%.2f   MAE=%.1f", n, r, rho, alpha_overall, MAE),
-  #          hjust = 0, size = 3.5) +
-  labs(x="Human overall (0–100)", y="LLM overall (0–100)") +
-  theme_uj()
-
-
-```
-
-
-:::
-
-::: {.column width="25%"}
-
-
-- Matched papers: `r n`
-- Pearson r: `r sprintf("%.2f", r)`
-- Spearman rho: `r sprintf("%.2f", rho)`
-- Krippendorff α (interval): `r if (is.na(alpha)) "NA" else sprintf("%.2f", alpha_overall)`
-- MAE (points): `r sprintf("%.1f", MAE)`
-
-:::
-
-
-:::
-
-
 \clearpage
 
 ## Qualitative comparison: detailed GPT‑5 Pro evaluations
@@ -576,6 +516,8 @@ This second run keeps the same quantitative metrics but additionally requires a 
 - the LLM’s quantitative scores and journal‑tier predictions,
 - the hidden reasoning steps used to arrive at those scores, and
 - the token usage and approximate API cost of the evaluation.
+
+@tbl-llm-token-cost-summary summarizes the token usage and estimated cost of each of these inferences.
 
 We start by examining the Williams et al. (2024) evaluation in detail and then show the analogous summaries for the other four focal papers. In the next step we will juxtapose these LLM assessments with the human evaluators’ written reports.
 
@@ -707,7 +649,8 @@ llm_reasoning_steps <- bind_rows(purrr::map(parsed, "reasoning_steps"))
 
 
 ```{r}
-#| label: llm-token-cost-summary
+#| label: tbl-llm-token-cost-summary
+#| tbl-cap: "Estimated token usage and cost of GPT‑5 Pro evaluations"
 
 token_cost_summary <- llm_master |>
   transmute(
@@ -736,10 +679,6 @@ knitr::kable(
 )
 
 ```
-
-
-
-
 
 ```{r}
 #| label: llm-williams-from-json
@@ -875,16 +814,6 @@ williams_tiers |>
 
 
 ```
-
-For Williams et al. (2024), GPT‑5 Pro assigns a high overall percentile score (86/100), with particularly strong ratings for advancing knowledge (92) and global relevance (94), and a relatively favourable view of methods (74) and claims and evidence (78). It judges the paper as deserving publication in a high‑tier journal (tier‑should 4.4/5, tier‑will 4.8/5). 
-
-In its diagnostic summary and reasoning trace (printed below), the model identifies many of the same issues highlighted by the human evaluators: heavy reliance on a regrowth dataset with low producer accuracy and substantial omission error; temporal leakage from contemporaneous predictors; uncalibrated random‑forest probabilities used to derive the 215 Mha estimate; unrealistically narrow confidence intervals; coarse predictors driving 30‑m predictions; a liberal definition of land “available for restoration”; and incomplete uncertainty quantification for the carbon overlay and permanence. It also notes that code is not fully open, limiting replication despite open data and published maps.
-
-By contrast, both human evaluators at The Unjournal assign much lower overall ratings (50/100) and are substantially more critical of methods and claims: methods scores of 20 and 5, and claims scores of 20 and 5, respectively. They explicitly argue that methodological problems “fundamentally challenge the validity and utility of the central 215 Mha estimate of regeneration potential,” even while rating the paper’s contribution to knowledge and global relevance as high and considering it suitable for high‑tier journals conditional on major revisions.
-
-Qualitatively, the LLM and human experts are strikingly aligned on what the main problems are: they converge on concerns about biased input data, temporal leakage, incomplete probability calibration, under‑stated uncertainty, domain definition, and the gap between “biophysical potential” and realistic policy use. However, they diverge sharply on how serious these problems are. The human evaluators treat them as sufficient to render the headline estimates low‑credibility and heavily qualified for policy use; GPT‑5 Pro instead regards these issues as important but ultimately compatible with a high overall rating, robust methods, and near top‑journal quality.
-
-This case suggests that, at least in this configuration, the LLM can reproduce sophisticated methodological critiques and uncertainty language but tends to under‑penalise these shortcomings in its quantitative ratings, especially for high‑profile, high‑impact work.
 
 
 

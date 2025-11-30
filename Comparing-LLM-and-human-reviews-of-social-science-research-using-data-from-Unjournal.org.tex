@@ -217,7 +217,7 @@ dissemination.
 
 \chapter{Introduction}\label{introduction}
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, left=2mm, bottomrule=.15mm, toprule=.15mm, opacityback=0, rightrule=.15mm, arc=.35mm, toptitle=1mm, leftrule=.75mm, colback=white, bottomtitle=1mm, breakable, titlerule=0mm, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Work in progress}, coltitle=black, colframe=quarto-callout-warning-color-frame, colbacktitle=quarto-callout-warning-color!10!white]
+\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Work in progress}, titlerule=0mm, colbacktitle=quarto-callout-warning-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-warning-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
 
 Pages, metrics, and comparisons are under active development. Expect
 rough edges and frequent updates.
@@ -538,22 +538,6 @@ mean ratings across evaluation criteria}
 
 \end{figure}%
 
-\includegraphics{results_files/figure-pdf/scatter-overall-static-stats-1.pdf}
-
-\begin{itemize}
-\tightlist
-\item
-  Matched papers: 47
-\item
-  Pearson r: 0.37
-\item
-  Spearman rho: 0.50
-\item
-  Krippendorff α (interval): 0.02
-\item
-  MAE (points): 13.2
-\end{itemize}
-
 \clearpage
 
 \section{Qualitative comparison: detailed GPT‑5 Pro
@@ -581,6 +565,9 @@ model. For each paper we can therefore inspect:
   the token usage and approximate API cost of the evaluation.
 \end{itemize}
 
+Table~\ref{tbl-llm-token-cost-summary} summarizes the token usage and
+estimated cost of each of these inferences.
+
 We start by examining the Williams et al.~(2024) evaluation in detail
 and then show the analogous summaries for the other four focal papers.
 In the next step we will juxtapose these LLM assessments with the human
@@ -593,6 +580,12 @@ evaluators' written reports.
   >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1809}}
   >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1383}}
   >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1702}}@{}}
+
+\caption{\label{tbl-llm-token-cost-summary}Estimated token usage and
+cost of GPT-5 Pro evaluations}
+
+\tabularnewline
+
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Paper
@@ -611,11 +604,11 @@ Est. cost (USD)
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Peterman et al.~2025 & 18762 & 7617 & 6208 & 26379 & 1.94 \\
-Adena and Hager 2024 & 24234 & 7019 & 5312 & 31253 & 1.84 \\
-Williams et al.~2024 & 28704 & 6327 & 5120 & 35031 & 1.80 \\
-Kudymowa et al.~2023 & 65096 & 4147 & 2432 & 69243 & 1.77 \\
-Green et al.~2025 & 22904 & 5884 & 3904 & 28788 & 1.52 \\
+Williams et al.~2024 & 28890 & 6795 & 5056 & 35685 & 1.86 \\
+Green et al.~2025 & 23090 & 6938 & 5440 & 30028 & 1.83 \\
+Adena and Hager 2024 & 24420 & 6211 & 4544 & 30631 & 1.66 \\
+Peterman et al.~2025 & 18948 & 6091 & 4480 & 25039 & 1.55 \\
+
 \end{longtable}
 
 \subsection{Qualitative comparison: Williams et
@@ -665,49 +658,6 @@ Predicted journal tier (will) & 4.8 & 4.8 & 4.8\\
 \bottomrule
 
 \end{longtable}
-
-For Williams et al.~(2024), GPT‑5 Pro assigns a high overall percentile
-score (86/100), with particularly strong ratings for advancing knowledge
-(92) and global relevance (94), and a relatively favourable view of
-methods (74) and claims and evidence (78). It judges the paper as
-deserving publication in a high‑tier journal (tier‑should 4.4/5,
-tier‑will 4.8/5).
-
-In its diagnostic summary and reasoning trace (printed below), the model
-identifies many of the same issues highlighted by the human evaluators:
-heavy reliance on a regrowth dataset with low producer accuracy and
-substantial omission error; temporal leakage from contemporaneous
-predictors; uncalibrated random‑forest probabilities used to derive the
-215 Mha estimate; unrealistically narrow confidence intervals; coarse
-predictors driving 30‑m predictions; a liberal definition of land
-``available for restoration''; and incomplete uncertainty quantification
-for the carbon overlay and permanence. It also notes that code is not
-fully open, limiting replication despite open data and published maps.
-
-By contrast, both human evaluators at The Unjournal assign much lower
-overall ratings (50/100) and are substantially more critical of methods
-and claims: methods scores of 20 and 5, and claims scores of 20 and 5,
-respectively. They explicitly argue that methodological problems
-``fundamentally challenge the validity and utility of the central 215
-Mha estimate of regeneration potential,'' even while rating the paper's
-contribution to knowledge and global relevance as high and considering
-it suitable for high‑tier journals conditional on major revisions.
-
-Qualitatively, the LLM and human experts are strikingly aligned on what
-the main problems are: they converge on concerns about biased input
-data, temporal leakage, incomplete probability calibration, under‑stated
-uncertainty, domain definition, and the gap between ``biophysical
-potential'' and realistic policy use. However, they diverge sharply on
-how serious these problems are. The human evaluators treat them as
-sufficient to render the headline estimates low‑credibility and heavily
-qualified for policy use; GPT‑5 Pro instead regards these issues as
-important but ultimately compatible with a high overall rating, robust
-methods, and near top‑journal quality.
-
-This case suggests that, at least in this configuration, the LLM can
-reproduce sophisticated methodological critiques and uncertainty
-language but tends to under‑penalise these shortcomings in its
-quantitative ratings, especially for high‑profile, high‑impact work.
 
 \bookmarksetup{startatroot}
 
@@ -872,7 +822,7 @@ traces}\label{llm-evaluation-summaries-and-reasoning-traces}
 
 \section{Adena and Hager 2024}\label{adena-and-hager-2024}
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, left=2mm, bottomrule=.15mm, toprule=.15mm, opacityback=0, rightrule=.15mm, arc=.35mm, toptitle=1mm, leftrule=.75mm, colback=white, bottomtitle=1mm, breakable, titlerule=0mm, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, coltitle=black, colframe=quarto-callout-note-color-frame, colbacktitle=quarto-callout-note-color!10!white]
+\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-note-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
 
 This is a large, well-executed geo-randomized natural field experiment
 that evaluates whether a nationwide Facebook video campaign increases
@@ -1009,7 +959,7 @@ digital advertising measurement.
 
 \end{tcolorbox}
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, left=2mm, bottomrule=.15mm, toprule=.15mm, opacityback=0, rightrule=.15mm, arc=.35mm, toptitle=1mm, leftrule=.75mm, colback=white, bottomtitle=1mm, breakable, titlerule=0mm, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, coltitle=black, colframe=quarto-callout-tip-color-frame, colbacktitle=quarto-callout-tip-color!10!white]
+\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, titlerule=0mm, colbacktitle=quarto-callout-tip-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-tip-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
 
 \textbf{Analyzing donation outcomes}
 
@@ -1335,7 +1285,7 @@ ewpage
 
 \section{Green et al.~2025}\label{green-et-al.-2025}
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, left=2mm, bottomrule=.15mm, toprule=.15mm, opacityback=0, rightrule=.15mm, arc=.35mm, toptitle=1mm, leftrule=.75mm, colback=white, bottomtitle=1mm, breakable, titlerule=0mm, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, coltitle=black, colframe=quarto-callout-note-color-frame, colbacktitle=quarto-callout-note-color!10!white]
+\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-note-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
 
 This meta-analysis asks a clear and policy-relevant question: which
 randomized interventions meaningfully reduce consumption of meat and
@@ -1443,7 +1393,7 @@ for substitution and compensation.
 
 \end{tcolorbox}
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, left=2mm, bottomrule=.15mm, toprule=.15mm, opacityback=0, rightrule=.15mm, arc=.35mm, toptitle=1mm, leftrule=.75mm, colback=white, bottomtitle=1mm, breakable, titlerule=0mm, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, coltitle=black, colframe=quarto-callout-tip-color-frame, colbacktitle=quarto-callout-tip-color!10!white]
+\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, titlerule=0mm, colbacktitle=quarto-callout-tip-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-tip-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
 
 \textbf{Analyzing meta-analysis details}
 
@@ -1921,7 +1871,7 @@ ewpage
 
 \section{Peterman et al.~2025}\label{peterman-et-al.-2025}
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, left=2mm, bottomrule=.15mm, toprule=.15mm, opacityback=0, rightrule=.15mm, arc=.35mm, toptitle=1mm, leftrule=.75mm, colback=white, bottomtitle=1mm, breakable, titlerule=0mm, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, coltitle=black, colframe=quarto-callout-note-color-frame, colbacktitle=quarto-callout-note-color!10!white]
+\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-note-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
 
 This is a carefully executed and policy-relevant systematic review and
 meta-analysis synthesizing 1,307 effect sizes from 93 experimental
@@ -2038,7 +1988,7 @@ credibility and practical usefulness for policy design.
 
 \end{tcolorbox}
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, left=2mm, bottomrule=.15mm, toprule=.15mm, opacityback=0, rightrule=.15mm, arc=.35mm, toptitle=1mm, leftrule=.75mm, colback=white, bottomtitle=1mm, breakable, titlerule=0mm, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, coltitle=black, colframe=quarto-callout-tip-color-frame, colbacktitle=quarto-callout-tip-color!10!white]
+\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, titlerule=0mm, colbacktitle=quarto-callout-tip-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-tip-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
 
 \textbf{Evaluating RVE Methodology}
 
@@ -2285,7 +2235,7 @@ ewpage
 
 \section{Williams et al.~2024}\label{williams-et-al.-2024}
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, left=2mm, bottomrule=.15mm, toprule=.15mm, opacityback=0, rightrule=.15mm, arc=.35mm, toptitle=1mm, leftrule=.75mm, colback=white, bottomtitle=1mm, breakable, titlerule=0mm, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, coltitle=black, colframe=quarto-callout-note-color-frame, colbacktitle=quarto-callout-note-color!10!white]
+\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-note-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
 
 This study assembles a pantropical, 30 m resolution model of the
 potential for natural forest regeneration (NR) on deforested lands
@@ -2422,7 +2372,7 @@ targets or designing incentives.
 
 \end{tcolorbox}
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, left=2mm, bottomrule=.15mm, toprule=.15mm, opacityback=0, rightrule=.15mm, arc=.35mm, toptitle=1mm, leftrule=.75mm, colback=white, bottomtitle=1mm, breakable, titlerule=0mm, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, coltitle=black, colframe=quarto-callout-tip-color-frame, colbacktitle=quarto-callout-tip-color!10!white]
+\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, titlerule=0mm, colbacktitle=quarto-callout-tip-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-tip-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
 
 \textbf{Analyzing regeneration potential}
 
