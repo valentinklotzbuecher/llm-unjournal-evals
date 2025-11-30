@@ -5,20 +5,22 @@ project:
 book:
   title: "Comparing LLM and human reviews of social science research using data from Unjournal.org"
   author:
-    - name: "David Reinstein"
-      affiliation: "The Unjournal"
-      email: davidreinstein@unjournal.org
-      orcid: 0000-0002-0470-4991
     - name: "Valentin Klotzbücher"
       orcid: 0000-0001-9382-6757
       email: valentin.klotzbuecher@usb.ch
       affiliation: "University of Basel & University Hospital Basel"
+    - name: "Lorenzo Pacchiardi"
+      affiliation: "University of Cambridge"
+      orcid: 0000-0003-4760-7638
+    - name: "David Reinstein"
+      affiliation: "The Unjournal"
+      email: davidreinstein@unjournal.org
+      orcid: 0000-0002-0470-4991
     - name: "Tianmai Michael Zhang"
       orcid: 0000-0001-5108-9250
-      email: tianmai@uw.edu
+      # email: tianmai@uw.edu
       affiliation: "University of Washington"
     # - name: "Casey Wimsatt"
-    # - name: "Lorenzo Pacchiardi"
   chapters:
     - index.qmd
     - methods.qmd #Puts papers data together, calls the LLM runs, has python code
@@ -31,7 +33,9 @@ book:
   #   - paper_response_analysis.qmd
   date: last-modified
   abstract: |
-    We will build and refine LLM tools to generate peer-reviews and ratings of impactful research, and compare these with human experts' work (esp. from Unjournal.org): to benchmark performance, understand AI's research taste, and develop tools to improve research evaluation and dissemination.
+    We study how a frontier language model evaluates social‑science research compared to expert human reviewers in The Unjournal.
+    Using the same structured rubric as human evaluators, we ask GPT‑5 Pro to rate papers on overall quality, methods, evidence, communication, openness, and global relevance, and to produce a narrative assessment anchored in the PDF of each paper.
+    We first compare its quantitative ratings to aggregated human scores across The Unjournal’s existing evaluations, then take a closer qualitative look at a small set of focal papers, including a high‑profile mapping study of natural regeneration. For these focal cases, we examine where the model’s written review overlaps with and diverges from the human reports, and how both sides describe the main strengths, weaknesses, and policy relevance of the work. So far, the model reliably identifies many of the same methodological and interpretive issues that human experts emphasize, but it tends to translate these into more generous numerical ratings and narrower uncertainty intervals. We view this as an initial, work‑in‑progress probe of LLM‑based peer review in a high‑stakes, policy‑relevant domain, and as the first step toward a broader benchmark and set of tools for comparing and combining human and AI research evaluations.
   repo-url: https://github.com/valentinklotzbuecher/llm-unjournal-eval
   downloads: [pdf]
 

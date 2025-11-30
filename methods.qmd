@@ -25,8 +25,6 @@ All papers have completed The Unjournal's evaluation process (meaning the author
 
 ## LLM-based evaluation
 
-### Quantitative ratings and journal-ranking tiers
-
 
 Following The Unjournal's [standard guidelines for evaluators](https://globalimpact.gitbook.io/the-unjournal-project-and-communication-space/policies-projects-evaluation-workflow/evaluation/guidelines-for-evaluators) and their [academic evaluation form](https://coda.io/form/Unjournal-Evaluation-form-academic-stream-Coda-updated-version_dGjfMZ1yXME), evaluators are asked to consider each paper along the following dimensions: **claims & evidence**, **methods**, **logic & communication**, **open science**, **global relevance**, and an **overall** assessment. Ratings are interpreted as percentiles relative to serious recent work in the same area. For each metric, evaluators are asked for the midpoint of their beliefs and their 90% credible interval, to communicate their uncertainty.
 For the journal rankings measure, we ask both "what journal ranking tier should this work be published in? (0.0-5.0)" and "what journal ranking tier will this work be published in? (0.0-5.0)", with some further explanation.The full prompt can be seen in the code below -- essentially copied from the Unjournal's guidelines page.
