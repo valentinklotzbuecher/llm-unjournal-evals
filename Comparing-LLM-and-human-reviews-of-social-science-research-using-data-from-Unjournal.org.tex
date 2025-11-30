@@ -217,7 +217,7 @@ dissemination.
 
 \chapter{Introduction}\label{introduction}
 
-\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Work in progress}, titlerule=0mm, colbacktitle=quarto-callout-warning-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-warning-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
+\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-warning-color!10!white, bottomrule=.15mm, left=2mm, colframe=quarto-callout-warning-color-frame, toptitle=1mm, coltitle=black, opacityback=0, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Work in progress}, colback=white, arc=.35mm, breakable, titlerule=0mm, bottomtitle=1mm, rightrule=.15mm, toprule=.15mm, leftrule=.75mm, opacitybacktitle=0.6]
 
 Pages, metrics, and comparisons are under active development. Expect
 rough edges and frequent updates.
@@ -659,6 +659,35 @@ Predicted journal tier (will) & 4.8 & 4.8 & 4.8\\
 
 \end{longtable}
 
+In its narrative assessment, GPT‑5 Pro highlights several concrete
+limitations. It emphasises that the dependent variable comes from a
+regrowth map with low producer accuracy and substantial omission error
+in humid biomes, so the model is trained on a systematically biased
+labeling of true regrowth. It notes that the random‑forest probabilities
+are learned under class balancing and are not calibrated to true
+prevalence, yet are treated as probabilities when computing the 215 Mha
+regeneration estimate and associated confidence intervals. It warns that
+validation relies on spatially random sampling rather than block
+cross‑validation, likely inflating reported accuracy. The model also
+points to conceptual slippage between ``biophysical potential'' and
+``realistic'' potential under socio‑economic constraints, incomplete
+treatment of uncertainty in the area and carbon estimates, and only
+partially open code despite open data and maps.
+
+The Unjournal synthesis report and individual human evaluations flag a
+very similar constellation of problems. The synthesis describes
+methodological issues that make the 215 Mha headline estimate difficult
+to reconcile with the underlying regrowth data and with historical
+benchmarks, stressing concerns about contemporaneous predictors (``data
+leakage''), confounding between biophysical and socio‑economic factors,
+and the lack of a hindcast or other validation against historical
+totals. It also criticises the way accuracy is assessed (including the
+use of a confusion matrix that mixes past regrowth labels with
+future‑oriented predictions), the narrow reported confidence intervals,
+the ambiguous definition of ``biophysical potential'' from a policy
+perspective, and the treatment of short‑lived regrowth in long‑run
+carbon claims.
+
 \bookmarksetup{startatroot}
 
 \chapter{Discussion}\label{discussion}
@@ -822,7 +851,7 @@ traces}\label{llm-evaluation-summaries-and-reasoning-traces}
 
 \section{Adena and Hager 2024}\label{adena-and-hager-2024}
 
-\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-note-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
+\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-note-color!10!white, bottomrule=.15mm, left=2mm, colframe=quarto-callout-note-color-frame, toptitle=1mm, coltitle=black, opacityback=0, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, colback=white, arc=.35mm, breakable, titlerule=0mm, bottomtitle=1mm, rightrule=.15mm, toprule=.15mm, leftrule=.75mm, opacitybacktitle=0.6]
 
 This is a large, well-executed geo-randomized natural field experiment
 that evaluates whether a nationwide Facebook video campaign increases
@@ -959,7 +988,7 @@ digital advertising measurement.
 
 \end{tcolorbox}
 
-\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, titlerule=0mm, colbacktitle=quarto-callout-tip-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-tip-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
+\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-tip-color!10!white, bottomrule=.15mm, left=2mm, colframe=quarto-callout-tip-color-frame, toptitle=1mm, coltitle=black, opacityback=0, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, colback=white, arc=.35mm, breakable, titlerule=0mm, bottomtitle=1mm, rightrule=.15mm, toprule=.15mm, leftrule=.75mm, opacitybacktitle=0.6]
 
 \textbf{Analyzing donation outcomes}
 
@@ -1285,7 +1314,7 @@ ewpage
 
 \section{Green et al.~2025}\label{green-et-al.-2025}
 
-\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-note-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
+\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-note-color!10!white, bottomrule=.15mm, left=2mm, colframe=quarto-callout-note-color-frame, toptitle=1mm, coltitle=black, opacityback=0, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, colback=white, arc=.35mm, breakable, titlerule=0mm, bottomtitle=1mm, rightrule=.15mm, toprule=.15mm, leftrule=.75mm, opacitybacktitle=0.6]
 
 This meta-analysis asks a clear and policy-relevant question: which
 randomized interventions meaningfully reduce consumption of meat and
@@ -1393,7 +1422,7 @@ for substitution and compensation.
 
 \end{tcolorbox}
 
-\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, titlerule=0mm, colbacktitle=quarto-callout-tip-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-tip-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
+\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-tip-color!10!white, bottomrule=.15mm, left=2mm, colframe=quarto-callout-tip-color-frame, toptitle=1mm, coltitle=black, opacityback=0, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, colback=white, arc=.35mm, breakable, titlerule=0mm, bottomtitle=1mm, rightrule=.15mm, toprule=.15mm, leftrule=.75mm, opacitybacktitle=0.6]
 
 \textbf{Analyzing meta-analysis details}
 
@@ -1871,7 +1900,7 @@ ewpage
 
 \section{Peterman et al.~2025}\label{peterman-et-al.-2025}
 
-\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-note-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
+\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-note-color!10!white, bottomrule=.15mm, left=2mm, colframe=quarto-callout-note-color-frame, toptitle=1mm, coltitle=black, opacityback=0, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, colback=white, arc=.35mm, breakable, titlerule=0mm, bottomtitle=1mm, rightrule=.15mm, toprule=.15mm, leftrule=.75mm, opacitybacktitle=0.6]
 
 This is a carefully executed and policy-relevant systematic review and
 meta-analysis synthesizing 1,307 effect sizes from 93 experimental
@@ -1988,7 +2017,7 @@ credibility and practical usefulness for policy design.
 
 \end{tcolorbox}
 
-\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, titlerule=0mm, colbacktitle=quarto-callout-tip-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-tip-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
+\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-tip-color!10!white, bottomrule=.15mm, left=2mm, colframe=quarto-callout-tip-color-frame, toptitle=1mm, coltitle=black, opacityback=0, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, colback=white, arc=.35mm, breakable, titlerule=0mm, bottomtitle=1mm, rightrule=.15mm, toprule=.15mm, leftrule=.75mm, opacitybacktitle=0.6]
 
 \textbf{Evaluating RVE Methodology}
 
@@ -2235,7 +2264,7 @@ ewpage
 
 \section{Williams et al.~2024}\label{williams-et-al.-2024}
 
-\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-note-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
+\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-note-color!10!white, bottomrule=.15mm, left=2mm, colframe=quarto-callout-note-color-frame, toptitle=1mm, coltitle=black, opacityback=0, title=\textcolor{quarto-callout-note-color}{\faInfo}\hspace{0.5em}{Model assessment summary}, colback=white, arc=.35mm, breakable, titlerule=0mm, bottomtitle=1mm, rightrule=.15mm, toprule=.15mm, leftrule=.75mm, opacitybacktitle=0.6]
 
 This study assembles a pantropical, 30 m resolution model of the
 potential for natural forest regeneration (NR) on deforested lands
@@ -2372,7 +2401,7 @@ targets or designing incentives.
 
 \end{tcolorbox}
 
-\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, titlerule=0mm, colbacktitle=quarto-callout-tip-color!10!white, coltitle=black, opacitybacktitle=0.6, bottomrule=.15mm, left=2mm, toptitle=1mm, colback=white, arc=.35mm, colframe=quarto-callout-tip-color-frame, toprule=.15mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, leftrule=.75mm]
+\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-tip-color!10!white, bottomrule=.15mm, left=2mm, colframe=quarto-callout-tip-color-frame, toptitle=1mm, coltitle=black, opacityback=0, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Model reasoning trace}, colback=white, arc=.35mm, breakable, titlerule=0mm, bottomtitle=1mm, rightrule=.15mm, toprule=.15mm, leftrule=.75mm, opacitybacktitle=0.6]
 
 \textbf{Analyzing regeneration potential}
 
