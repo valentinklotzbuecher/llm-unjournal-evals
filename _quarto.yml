@@ -1,8 +1,6 @@
 project:
   type: book
   output-dir: _book
-  resources:
-    - slidesvk.html
 
 book:
   title: "Comparing LLM and human reviews of social science research using data from Unjournal.org"
@@ -28,7 +26,8 @@ book:
     # - questions_answers.qmd
     - discussion.qmd
     - references.qmd
-  # appendices:
+  appendices:
+      - appendix_llm_traces.qmd
   #   - paper_response_analysis.qmd
   date: last-modified
   abstract: |
@@ -38,7 +37,7 @@ book:
 
 bibliography:
   - "references.bib"
-  - "grateful-refs.bib"
+  # - "grateful-refs.bib"
 csl: "the-quarterly-journal-of-economics.csl"
 link-citations: true
 

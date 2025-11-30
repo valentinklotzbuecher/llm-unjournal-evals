@@ -1,8 +1,8 @@
 {
-  "hash": "761d5002dc6f6152867f6974ddae4f58",
+  "hash": "2c9780c58b5b871f33962abb84c562a8",
   "result": {
     "engine": "knitr",
-    "markdown": "# References {.unnumbered}\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(\"grateful\")\n\ncitations <- cite_packages(output = \"paragraph\",\n                           out.dir = \".\",\n                           cite.tidyverse = TRUE)\n\ncitations\n```\n\n::: {.cell-output-display}\nWe used R version 4.4.2 [@base] and the following R packages: ggalluvial v. 0.12.5 [@ggalluvial-article; @ggalluvial-package], ggbreak v. 0.1.6 [@ggbreak], ggforce v. 0.4.2 [@ggforce], ggrepel v. 0.9.6 [@ggrepel], glue v. 1.8.0 [@glue], here v. 1.0.1 [@here], irr v. 0.84.1 [@irr], janitor v. 2.2.0 [@janitor], kableExtra v. 1.4.0 [@kableExtra], knitr v. 1.49 [@knitr2014; @knitr2015; @knitr2024], rmarkdown v. 2.29 [@rmarkdown2018; @rmarkdown2020; @rmarkdown2024], scales v. 1.3.0 [@scales], stringi v. 1.8.4 [@stringi], tidyverse v. 2.0.0 [@tidyverse], viridis v. 0.6.5 [@viridis].\n:::\n:::\n\n\n::: {#refs}\n:::\n",
+    "markdown": "# References {.unnumbered}\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(\"grateful\")\n\ncitations <- cite_packages(output = \"paragraph\",\n                           out.dir = \".\",\n                           cite.tidyverse = TRUE)\n\n# citations\n```\n:::\n\n\n::: {#refs}\n:::\n",
     "supporting": [],
     "filters": [
       "rmarkdown/pagebreak.lua"

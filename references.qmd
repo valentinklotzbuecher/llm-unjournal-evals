@@ -9,7 +9,7 @@ citations <- cite_packages(output = "paragraph",
                            out.dir = ".",
                            cite.tidyverse = TRUE)
 
-citations
+# citations
 
 ```
 

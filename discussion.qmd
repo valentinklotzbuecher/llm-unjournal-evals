@@ -26,31 +26,3 @@ Scoring calibration: The AI was prompted to use the 0–100 percentile scale, bu
 
 Small differences and rounding: Our analysis treated the AI’s numeric outputs at face value. Small differences (e.g. AI 85 vs human 82) might not be meaningful in practice – both indicate a similar qualitative assessment (“very good”). Some of our metrics (like kappa) penalize any difference, even if minor. Thus, the “low agreement” statistics might sound worse than the reality where in many cases AI and humans were only off by a few points. We intend to analyze the distribution of absolute differences: a large portion might be within say ±5 points which could be considered essentially agreement in practice. The credible intervals add another layer: sometimes an AI’s score fell outside a human’s interval, but overlapping intervals could still mean they agree within uncertainty. We did observe that AI’s intervals were often narrower than humans’ (LLM tended to be confident, giving ~10-point spreads, whereas some human evaluators gave 20-point or left some intervals blank), which is another aspect of calibration.
 
-
-::: {.callout-warning}
-# Planned updates and extensions
-
-Also see internal [tasks/issues](https://coda.io/d/Comparing-LLM-Generated-Reviews-to-Human-Evaluations-in-Social-S_dSJIQH2CJD3/Tasks-Issues_suLMhWJf#Tasks-and-issues_tu28DguH/r153) in Coda
-
-
-- Related work
-- Slides
-
-- Extended evaluation: 
-  - Journal ranking tiers and predictions
-  - Claim identification
-  - Qualitative assessments and full evaluations
-  - Comparing evaluations across fields/areas
-
-- Improved workflow:
-  - Improve PDF ingestion
-  - System prompt optimization
-  - Alternative models
-  - Extend set of papers
-  
-- Aggregating multiple LLM runs
-- Anonymization
-- Evaluation of papers for prospective (uncontaminated) evaluation 
-
-- More grounded information theoretic metrics and robust statistical tests.
-:::
