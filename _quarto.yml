@@ -75,7 +75,6 @@ format:
       - icon: rocket
         href: https://www.unjournal.org/
         text: "The Unjournal"
-        
   pdf:
     documentclass: scrreprt
     fontsize: 11pt
@@ -88,6 +87,7 @@ format:
     fig-align: left
     df-print: kable
     latex-engine: xelatex
+    include-in-header: preamble.tex
     execute:
       warning: false
       message: false

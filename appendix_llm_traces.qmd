@@ -159,7 +159,7 @@ cat(":::\n\n")
 # Page break in PDF, horizontal rule in HTML
 
 if (knitr::is_latex_output()) {
-cat("\newpage\n\n")
+cat("\\newpage\n\n")
 } else {
 cat("---\n\n")
 }
