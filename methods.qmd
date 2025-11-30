@@ -284,7 +284,7 @@ TIER_METRIC_SCHEMA = {
 COMBINED_SCHEMA = {
     "type": "object",
     "properties": {
-        "assessment_summary": {"type": "string","maxLength": 5000},
+        "assessment_summary": {"type": "string"},
         "metrics": {
             "type": "object",
             "properties": {
@@ -417,7 +417,7 @@ def evaluate_paper(pdf_path: Union[str, pathlib.Path],
     def _payload():
         p = dict(
             model=model,
-            text={"format": TEXT_FORMAT_COMBINED, "verbosity": "high"},
+            text={"format": TEXT_FORMAT_COMBINED},
             input=[
                 {"role": "system", "content": [
                     {"type": "input_text", "text": SYSTEM_PROMPT_COMBINED}
@@ -427,7 +427,7 @@ def evaluate_paper(pdf_path: Union[str, pathlib.Path],
                     {"type": "input_text", "text": "Return STRICT JSON per schema. No extra text."}
                 ]},
             ],
-            max_output_tokens=8000,
+            max_output_tokens=12000,
             background=True,
             store=True,
         )
@@ -537,7 +537,8 @@ def _safe_read_csv(path, columns):
 
 cols = ["paper","pdf","response_id","file_id","model","status","created_at",
         "last_update","collected","error","reasoning_id","input_tokens",
-        "output_tokens","reasoning_tokens"]
+        "output_tokens","reasoning_tokens","reasoning_summary"]
+
 idx = _safe_read_csv(IDX, cols)
 
 if idx.empty:
@@ -600,6 +601,8 @@ else:
             idx.at[i,"input_tokens"] = m.get("input_tokens")
             idx.at[i,"output_tokens"] = m.get("output_tokens")
             idx.at[i,"reasoning_tokens"] = m.get("reasoning_tokens")
+            idx.at[i,"reasoning_summary"] = m.get("reasoning_summary")
+
 
         except Exception as e:
             idx.at[i,"error"] = f"collect: {e}"
@@ -643,4 +646,142 @@ else:
     print("Status counts:", counts)
     print(f"Progress: {counts.get('completed',0)}/{len(idx)} completed")
 ```
+
+
+```{python}
+#| label: llm-master-table
+#| eval: false
+#| code-summary: "Build one-row-per-paper master table (CSV/Parquet/Excel)"
+
+import pathlib
+import json
+import pandas as pd
+
+OUT = pathlib.Path("results")
+OUT.mkdir(exist_ok=True)
+IDX = OUT / "jobs_index.csv"
+
+# Base index (one row per paper / job)
+idx_cols = [
+    "paper","pdf","response_id","file_id","model","status",
+    "created_at","last_update","collected","error",
+    "reasoning_id","input_tokens","output_tokens","reasoning_tokens",
+    "reasoning_summary",  # may be all-NA if you haven’t added it yet
+]
+idx = read_csv_or_empty(IDX, columns=idx_cols)
+if idx.empty:
+    print("jobs_index.csv is empty; nothing to build.")
+else:
+    # Long → wide: percentile metrics
+    metrics_path = OUT / "metrics_long.csv"
+    metrics = read_csv_or_empty(
+        metrics_path,
+        columns=["paper","metric","midpoint","lower_bound","upper_bound"],
+    )
+    if not metrics.empty:
+        m_wide = (
+            metrics
+            .pivot(index="paper",
+                   columns="metric",
+                   values=["midpoint","lower_bound","upper_bound"])
+        )
+        # Flatten MultiIndex: (stat, metric) → "{metric}_{stat}"
+        m_wide.columns = [
+            f"{metric}_{stat}" for stat, metric in m_wide.columns
+        ]
+        m_wide = m_wide.reset_index()
+    else:
+        m_wide = pd.DataFrame(columns=["paper"])
+
+    # Long → wide: tier metrics
+    tiers_path = OUT / "tiers_long.csv"
+    tiers = read_csv_or_empty(
+        tiers_path,
+        columns=["paper","tier_kind","score","lo","hi"],
+    )
+    if not tiers.empty:
+        t_wide = (
+            tiers
+            .pivot(index="paper",
+                   columns="tier_kind",
+                   values=["score","lo","hi"])
+        )
+        t_wide.columns = [
+            f"{tier}_{stat}" for stat, tier in t_wide.columns
+        ]
+        t_wide = t_wide.reset_index()
+    else:
+        t_wide = pd.DataFrame(columns=["paper"])
+
+    # Assessment summaries
+    summaries_path = OUT / "assessment_summaries.csv"
+    summaries = read_csv_or_empty(
+        summaries_path,
+        columns=["paper","assessment_summary"],
+    )
+
+    # Merge everything to one row per paper
+    wide = (
+        idx
+        .merge(m_wide, on="paper", how="left")
+        .merge(t_wide, on="paper", how="left")
+        .merge(summaries, on="paper", how="left")
+    )
+
+    # OPTIONAL: if you did NOT store reasoning_summary in jobs_index,
+    # you can fill a short summary from the stored JSON once per paper.
+    if wide["reasoning_summary"].isna().all():
+        JSN = OUT / "json"
+        def _reasoning_summary_from_json(paper):
+            jpath = JSN / f"{paper}.response.json"
+            if not jpath.exists():
+                return pd.NA
+            try:
+                with open(jpath, "r", encoding="utf-8") as f:
+                    d = json.load(f)
+                out = d.get("output") or []
+                if out and isinstance(out, list) and out[0].get("type") == "reasoning":
+                    summ = out[0].get("summary") or []
+                    if summ and isinstance(summ, list):
+                        return summ[0].get("text")
+            except Exception:
+                return pd.NA
+            return pd.NA
+
+        wide["reasoning_summary"] = wide["paper"].apply(_reasoning_summary_from_json)
+
+    # Tidy column order: metadata → metrics → tiers → text
+    meta_cols = [
+        "paper","pdf","model","response_id","file_id","status",
+        "created_at","last_update","collected","error",
+        "input_tokens","output_tokens","reasoning_tokens","reasoning_id",
+        "reasoning_summary",
+    ]
+    meta_cols = [c for c in meta_cols if c in wide.columns]
+
+    # All remaining numeric/text columns
+    other_cols = [c for c in wide.columns if c not in meta_cols]
+    wide = wide[meta_cols + other_cols]
+
+    # Write outputs
+    master_csv   = OUT / "llm_evals_master.csv"
+    # master_parq  = OUT / "llm_evals_master.parquet"
+    master_xlsx  = OUT / "llm_evals_master.xlsx"
+
+    wide.to_csv(master_csv, index=False)
+    # wide.to_parquet(master_parq, index=False)
+
+    # try:
+    #     wide.to_excel(master_xlsx, index=False)
+    # except ImportError:
+    #     # Excel is nice-to-have; fail soft if openpyxl/xlsxwriter isn’t installed
+    #     print("Excel writer not available; skipped llm_evals_master.xlsx")
+
+    print("Master table written to:")
+    print(f"  - {master_csv}")
+    # print(f"  - {master_parq}")
+    # print(f"  - {master_xlsx} (if Excel writer is installed)")
+
+```
+
     

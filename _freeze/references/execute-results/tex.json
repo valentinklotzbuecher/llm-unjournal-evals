@@ -1,0 +1,19 @@
+{
+  "hash": "761d5002dc6f6152867f6974ddae4f58",
+  "result": {
+    "engine": "knitr",
+    "markdown": "# References {.unnumbered}\n\n\n\n::: {.cell}\n::: {.cell-output-display}\nWe used R version 4.4.2 [@base] and the following R packages: ggforce v. 0.4.2 [@ggforce], ggrepel v. 0.9.6 [@ggrepel], glue v. 1.8.0 [@glue], here v. 1.0.1 [@here], janitor v. 2.2.0 [@janitor], kableExtra v. 1.4.0 [@kableExtra], knitr v. 1.49 [@knitr2014; @knitr2015; @knitr2024], rmarkdown v. 2.29 [@rmarkdown2018; @rmarkdown2020; @rmarkdown2024], scales v. 1.3.0 [@scales], tidyselect v. 1.2.1 [@tidyselect], tidyverse v. 2.0.0 [@tidyverse].\n:::\n:::\n\n\n\n::: {#refs}\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {
+      "knitr": [
+        "{\"type\":\"list\",\"attributes\":{},\"value\":[]}"
+      ]
+    },
+    "preserve": null,
+    "postProcess": false
+  }
+}

@@ -23,3 +23,5 @@ viridis
 ggbreak
 lpSolve
 irr
+plotly
+jsonlite

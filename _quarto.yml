@@ -33,18 +33,8 @@ book:
   date: last-modified
   abstract: |
     We will build and refine LLM tools to generate peer-reviews and ratings of impactful research, and compare these with human experts' work (esp. from Unjournal.org): to benchmark performance, understand AI's research taste, and develop tools to improve research evaluation and dissemination.
-  repo-url: https://github.com/valentinklotzbuecher/llm-unjournal-eval
+  # repo-url: https://github.com/valentinklotzbuecher/llm-unjournal-eval
   downloads: [pdf]
-  sidebar:
-    style: "docked"
-    search: true
-    tools:
-      - icon: rocket
-        href: https://www.unjournal.org/
-        text: "The Unjournal"
-      - icon: display
-        href: slidesvk.html
-        text: "📊 Slides"
 
 bibliography:
   - "references.bib"
@@ -79,26 +69,35 @@ format:
       freeze: auto
       cache: true
       python: "python3"
-
-  # pdf:
-  #   documentclass: scrreprt
-  #   fontsize: 11pt
-  #   geometry: margin=1in
-  #   toc: true
-  #   number-sections: true
-  #   link-citations: true
-  #   keep-tex: true
-  #   fig-cap-location: top
-  #   fig-align: left
-  #   df-print: kable
-  #   latex-engine: xelatex
-  #   execute:
-  #     warning: false
-  #     message: false
-  #     freeze: auto
-  #     cache: true
-  #     prefer-html: true
-  #     echo: false
+    code-links:
+      - icon: github
+        href: https://github.com/valentinklotzbuecher/llm-unjournal-eval
+    other-links:
+      - icon: rocket
+        href: https://www.unjournal.org/
+        text: "The Unjournal"
+      - icon: display
+        href: slidesvk.html
+        text: "Slides"
+  pdf:
+    documentclass: scrreprt
+    fontsize: 11pt
+    geometry: margin=1in
+    toc: true
+    number-sections: true
+    link-citations: true
+    keep-tex: true
+    fig-cap-location: top
+    fig-align: left
+    df-print: kable
+    latex-engine: xelatex
+    execute:
+      warning: false
+      message: false
+      freeze: auto
+      cache: true
+      prefer-html: true
+      echo: false
   # docx:
   #   toc: true
   #   number-sections: true
