@@ -9,9 +9,9 @@ book:
       orcid: 0000-0001-9382-6757
       email: valentin.klotzbuecher@usb.ch
       affiliation: "University of Basel & University Hospital Basel"
-    - name: "Lorenzo Pacchiardi"
-      affiliation: "University of Cambridge"
-      orcid: 0000-0003-4760-7638
+    # - name: "Lorenzo Pacchiardi"
+    #   affiliation: "University of Cambridge"
+    #   orcid: 0000-0003-4760-7638
     - name: "David Reinstein"
       affiliation: "The Unjournal"
       email: davidreinstein@unjournal.org
