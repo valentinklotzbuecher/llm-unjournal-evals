@@ -24,9 +24,9 @@ book:
   chapters:
     - index.qmd
     - methods.qmd #Puts papers data together, calls the LLM runs, has python code
-    - results.qmd #Matches LLM output to Unjournal rating data, analysis of differences and performance, R code
+    # - results.qmd #Matches LLM output to Unjournal rating data, analysis of differences and performance, R code
     # - questions_answers.qmd
-    - discussion.qmd
+    # - discussion.qmd
     - references.qmd
   appendices:
       - appendix_llm_traces.qmd

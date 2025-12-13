@@ -1,0 +1,10 @@
+paper,metric,metric_type,value,lo,hi,scale_min,scale_max
+Peterman et al. 2025,overall,percentile,86.0,86.0,86.0,0,100
+Peterman et al. 2025,claims_evidence,percentile,84.0,84.0,84.0,0,100
+Peterman et al. 2025,methods,percentile,82.0,82.0,82.0,0,100
+Peterman et al. 2025,advancing_knowledge,percentile,86.0,86.0,86.0,0,100
+Peterman et al. 2025,logic_communication,percentile,80.0,80.0,80.0,0,100
+Peterman et al. 2025,open_science,percentile,76.0,76.0,76.0,0,100
+Peterman et al. 2025,global_relevance,percentile,92.0,92.0,92.0,0,100
+Peterman et al. 2025,tier_should,tier,4.4,4.4,4.4,0,5
+Peterman et al. 2025,tier_will,tier,4.2,4.2,4.2,0,5
